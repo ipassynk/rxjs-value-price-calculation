@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>JS Bin</title>
+</head>
+<body>
+<script src="https://npmcdn.com/@reactivex/rxjs@5.0.0-beta.7/dist/global/Rx.umd.js"></script>
+Quality: <input id="quality"/>
+  <br><br>
+Dollar Value: <input id="value"/>
+<script id="jsbin-javascript">
+'use strict';
+
+var Observable = Rx.Observable;
+
+var price = 5;
+
+var quality$ = Observable.fromEvent(document.querySelector('#quality'), 'input').map(function (event) {
+    return event.target.value;
+}).map(function (el) {
+    return parseInt(el);
+});
+
+var value$ = Observable.fromEvent(document.querySelector('#value'), 'input').map(function (event) {
+    return event.target.value;
+}).map(function (el) {
+    return parseInt(el);
+});
+
+var valueRecalc$ = value$.startWith(0);
+
+var valueToQuantity$ = quality$.withLatestFrom(valueRecalc$, function (q, v) {
+    return q * price;
+});
+
+Observable.merge(value$, valueToQuantity$).subscribe(function (v) {
+    return document.querySelector('#value').value = v;
+});
+</script>
+
+
+
+<script id="jsbin-source-javascript" type="text/javascript">
+const Observable = Rx.Observable;
+
+let price = 5;
+
+let quality$ = 
+    Observable.fromEvent(document.querySelector('#quality'), 'input')
+    .map(event=> event.target.value)
+    .map(el=> parseInt(el));
+
+let value$ = 
+    Observable.fromEvent(document.querySelector('#value'), 'input')
+    .map(event=> event.target.value)
+    .map(el=> parseInt(el));
+
+let valueRecalc$= value$.startWith(0);
+
+let valueToQuantity$ = quality$
+                  .withLatestFrom(valueRecalc$, (q, v) => q*price);
+
+Observable.merge(value$, valueToQuantity$)
+  .subscribe(v=> document.querySelector('#value').value = v);
+
+</script></body>
+</html>
